@@ -237,7 +237,9 @@ If your module requires JAGS:
           requiresJAGS: true
 ```
 
-## Test Coverage Goals
+## Test Coverage {#sec-coverage}
+
+### Coverage Goals
 
 | Module type | Minimum coverage |
 |------------|-----------------|
@@ -245,3 +247,86 @@ If your module requires JAGS:
 | Community module | At least one test per analysis that runs without error |
 
 For the full module checklists, see @sec-publishing.
+
+### Adding a Coverage Action
+
+Every official JASP module should include a coverage workflow to track which parts of the code are covered by unit tests. This helps maintainers identify vulnerable areas and improve coverage in a targeted manner. Setting this up takes about 5 minutes per module.
+
+::: {.callout-note}
+Make sure you have the unit test workflow (`.github/workflows/unittests.yml`, described in @sec-ci) in place before adding the coverage action.
+:::
+
+#### Step 1: Add the workflow file
+
+Create `.github/workflows/test-coverage.yml` with the following content:
+
+```yaml
+# .github/workflows/test-coverage.yml
+on:
+  push:
+    branches:
+      - master  # Essential for Codecov baseline
+    paths: ['**.R', 'tests/**', '**.c', '**.cpp', '**.h', '**.hpp',
+            'DESCRIPTION', 'NAMESPACE', 'MAKEVARS', 'MAKEVARS.win', '**.yml']
+
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths: ['**.R', 'tests/**', '**.c', '**.cpp', '**.h', '**.hpp',
+            'DESCRIPTION', 'NAMESPACE', 'MAKEVARS', 'MAKEVARS.win']
+
+jobs:
+  coverage:
+    # Run on push (merge) OR if the PR is NOT a draft
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
+
+    uses: jasp-stats/jasp-actions/.github/workflows/coverage.yml@master
+    with:
+      needs_JAGS: false
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+```
+
+If your module relies on JAGS, set `needs_JAGS: true` (see e.g., `jaspRegression`).
+
+#### Step 2: Add the Codecov token
+
+1. Go to [app.codecov.io/gh/jasp-stats](https://app.codecov.io/gh/jasp-stats) and log in via GitHub.
+2. Find your repository and go to the **Configuration** tab.
+3. Under **General**, locate the **Repository upload token** (see @fig-codecov-token).
+4. In your GitHub repository, go to **Settings → Secrets and variables → Actions** (see @fig-github-repo-secret).
+5. Add a new repository secret named `CODECOV_TOKEN` with the token value.
+
+![Finding the Codecov repository upload token. Navigate to Configuration → General to find the token.](img/codecov-token.png){#fig-codecov-token}
+
+![Adding the `CODECOV_TOKEN` secret in GitHub. Go to Settings → Secrets and variables → Actions, then click "New repository secret".](img/github-repo-secret.png){#fig-github-repo-secret}
+
+#### Step 3: Update the README
+
+Add badges and maintainer info to your `README.md`. Replace `jaspMyModule` and the maintainer details as appropriate:
+
+```html
+<div align="right">
+
+[![Unit Tests](https://github.com/jasp-stats/jaspMyModule/actions/workflows/unittests.yml/badge.svg)](https://github.com/jasp-stats/jaspMyModule/actions/workflows/unittests.yml)
+[![codecov](https://codecov.io/gh/jasp-stats/jaspMyModule/branch/master/graph/badge.svg)](https://codecov.io/gh/jasp-stats/jaspMyModule)
+<br>
+<b>Maintainer:</b> <a href="https://github.com/username/">Maintainer Name</a>
+
+</div>
+```
+
+If multiple people share maintainer duties (e.g., one for frequentist and one for Bayesian analyses):
+
+```html
+<div align="right">
+
+[![Unit Tests](https://github.com/jasp-stats/jaspMyModule/actions/workflows/unittests.yml/badge.svg)](https://github.com/jasp-stats/jaspMyModule/actions/workflows/unittests.yml)
+[![codecov](https://codecov.io/gh/jasp-stats/jaspMyModule/branch/master/graph/badge.svg)](https://codecov.io/gh/jasp-stats/jaspMyModule)
+<br>
+<b>Maintainers:</b> <a href="https://github.com/JohnnyDoorn/">Johnny van Doorn (Freq)</a><br>
+ <a href="https://github.com/vandenman/">Don van den Bergh (Bayes)</a>
+
+</div>
+```
+
+Including a module description in the README is also recommended — see [jaspAudit](https://github.com/jasp-stats/jaspAudit) for a good example.
