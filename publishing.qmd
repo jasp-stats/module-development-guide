@@ -59,7 +59,7 @@ All items should be completed before requesting an official release.
 - [ ] All tests pass in GitHub Actions CI (@sec-ci)
 - [ ] Complete **help files** for every analysis (`inst/help/`)
 - [ ] `info` properties on all QML elements for inline documentation
-- [ ] Informative **README** with module description and screenshots
+- [ ] Informative **README** with module description (@sec-module-readme)
 - [ ] **NEWS / changelog** file maintained and updated before each release
 - [ ] Option names follow naming conventions (@sec-option-names)
 - [ ] **Upgrades.qml** entries for any renamed/removed options (@sec-upgrades)
@@ -76,7 +76,7 @@ These are the minimum requirements for a community module to be accepted into th
 :::
 
 - [ ] At least **one test per analysis** that runs without error
-- [ ] **README** with module description and usage instructions
+- [ ] **README** with module description and usage instructions (@sec-module-readme)
 - [ ] Working example `.jasp` files (in `tests/testthat/jaspfiles/` or `examples/`)
 - [ ] Module **installs and loads** without errors in current JASP nightly
 - [ ] Valid `DESCRIPTION` file with correct metadata (title, author, version, dependencies)
@@ -89,3 +89,65 @@ These are the minimum requirements for a community module to be accepted into th
 - [ ] Translation-ready strings
 - [ ] GitHub Actions CI workflow
 - [ ] Upgrades.qml for backward compatibility
+
+## Module README {#sec-module-readme}
+
+Your module's `README.md` is the landing page for anyone wanting to learn more about your module — we link to it from the JASP module library. A good README makes it easy to see at a glance what the module does, who maintains it, and whether the tests are passing. See [jaspMetaAnalysis](https://github.com/jasp-stats/jaspMetaAnalysis) for a full example.
+
+A module README should include the following:
+
+### Badges and maintainer
+
+At the top, add badges for the unit test and coverage workflows, plus the maintainer name(s). Replace `jaspMyModule` and the maintainer details as appropriate:
+
+```html
+<div align="right">
+
+[![Unit Tests](https://github.com/jasp-stats/jaspMyModule/actions/workflows/unittests.yml/badge.svg)](https://github.com/jasp-stats/jaspMyModule/actions/workflows/unittests.yml)
+[![codecov](https://codecov.io/gh/jasp-stats/jaspMyModule/branch/master/graph/badge.svg)](https://codecov.io/gh/jasp-stats/jaspMyModule)
+<br>
+<b>Maintainer:</b> <a href="https://github.com/username/">Maintainer Name</a>
+
+</div>
+```
+
+The codecov badge requires the coverage workflow to be set up first — see @sec-coverage for instructions.
+
+If multiple people share maintainer duties (e.g., one for frequentist and one for Bayesian analyses):
+
+```html
+<b>Maintainers:</b> <a href="https://github.com/JohnnyDoorn/">Johnny van Doorn (Freq)</a><br>
+ <a href="https://github.com/vandenman/">Don van den Bergh (Bayes)</a>
+```
+
+### Module description
+
+Add a short overview of what your module does: which analyses it provides, and what kind of research questions it helps answer. You can include the module icon for visual identity:
+
+```markdown
+# The Meta-Analysis Module
+
+## Overview
+
+<img src='inst/icons/meta-analysis.svg' width='149' height='173' align='right'/>
+
+**JASP Meta-Analysis module** is an add-on module for JASP that provides
+tools for ...
+```
+
+### Key R packages
+
+List the main R packages that power your module's analyses. This helps users and contributors understand what's under the hood:
+
+```markdown
+## R Packages
+
+<img src='https://www.r-project.org/logo/Rlogo.svg' width='100' height='78' align='right'/>
+
+The functionality is served by several R packages
+
+- **metafor** — Meta-analysis ([metafor on CRAN](https://cran.r-project.org/package=metafor))
+- **metaBMA** — Bayesian model averaging for meta-analysis ([metaBMA on CRAN](https://cran.r-project.org/package=metaBMA))
+```
+
+Focus on the packages that are specific to your module's analyses — no need to list general dependencies like `ggplot2` or `jaspBase` unless they play a central role.

@@ -300,33 +300,4 @@ If your module relies on JAGS, set `needs_JAGS: true` (see e.g., `jaspRegression
 
 ![Adding the `CODECOV_TOKEN` secret in GitHub. Go to Settings → Secrets and variables → Actions, then click "New repository secret".](img/github-repo-secret.png){#fig-github-repo-secret}
 
-#### Step 3: Update the README
-
-Add badges and maintainer info to your `README.md`. Replace `jaspMyModule` and the maintainer details as appropriate:
-
-```html
-<div align="right">
-
-[![Unit Tests](https://github.com/jasp-stats/jaspMyModule/actions/workflows/unittests.yml/badge.svg)](https://github.com/jasp-stats/jaspMyModule/actions/workflows/unittests.yml)
-[![codecov](https://codecov.io/gh/jasp-stats/jaspMyModule/branch/master/graph/badge.svg)](https://codecov.io/gh/jasp-stats/jaspMyModule)
-<br>
-<b>Maintainer:</b> <a href="https://github.com/username/">Maintainer Name</a>
-
-</div>
-```
-
-If multiple people share maintainer duties (e.g., one for frequentist and one for Bayesian analyses):
-
-```html
-<div align="right">
-
-[![Unit Tests](https://github.com/jasp-stats/jaspMyModule/actions/workflows/unittests.yml/badge.svg)](https://github.com/jasp-stats/jaspMyModule/actions/workflows/unittests.yml)
-[![codecov](https://codecov.io/gh/jasp-stats/jaspMyModule/branch/master/graph/badge.svg)](https://codecov.io/gh/jasp-stats/jaspMyModule)
-<br>
-<b>Maintainers:</b> <a href="https://github.com/JohnnyDoorn/">Johnny van Doorn (Freq)</a><br>
- <a href="https://github.com/vandenman/">Don van den Bergh (Bayes)</a>
-
-</div>
-```
-
-Including a module description in the README is also recommended — see [jaspAudit](https://github.com/jasp-stats/jaspAudit) for a good example.
+Once coverage is set up, add the coverage badge to your module's README — see @sec-module-readme for details.
