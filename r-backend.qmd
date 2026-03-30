@@ -232,6 +232,25 @@ Continuing our running example — the table retrieves the model from `jaspResul
 }
 ```
 
+#### Using `setData` instead of `addRows` {#sec-setdata}
+
+When you already have a `data.frame` (or can easily build one), `$setData()` is a convenient alternative to looping with `$addRows()`.
+It fills the entire table at once:
+
+```r
+  coefTab <- summary(results$model)$coefficients
+
+  table$setData(data.frame(
+    term     = rownames(coefTab),
+    estimate = coefTab[, "Estimate"],
+    se       = coefTab[, "Std. Error"],
+    p        = coefTab[, "Pr(>|t|)"]
+  ))
+```
+
+The column names in the `data.frame` must match the `name` arguments passed to `$addColumnInfo()`.
+`setData` replaces all rows, so call it once — don't mix it with `addRows` on the same table.
+
 #### Column types
 
 | Type | Description | Format options |
