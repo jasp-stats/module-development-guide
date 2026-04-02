@@ -175,55 +175,25 @@ This opens a Shiny app showing old vs. new plots. Accepting a change updates the
 
 ### Structural Plot Fallback {#sec-plot-fallback}
 
-SVG snapshots are compared as exact text. This means that tiny, visually imperceptible differences in rendered coordinates — caused by different operating systems, graphics libraries, or floating-point behaviour — can cause plot tests to fail on CI (the automated tests that run on GitHub when you push a commit) even though the plots look identical. For example, an SVG path coordinate like `250.678901` on macOS might render as `250.678903` on the Ubuntu machines used by GitHub Actions. The plots are visually indistinguishable, but vdiffr flags them as different.
+Sometimes plot tests pass locally but fail on GitHub. This happens because SVG snapshots are compared as exact text — tiny cross-platform rendering differences (e.g., a coordinate `250.678901` vs `250.678903`) are enough to make the comparison fail, even though the plots look identical. If you notice plot failures on a GitHub PR while your local `testAll()` is fine, you can use the **structural fallback**.
 
-To handle this, `jaspTools` includes a **structural fallback**. When a vdiffr SVG comparison fails, it automatically falls back to comparing the underlying ggplot structure: the plotted data values, labels, scales, and layer specifications. If these match within a numeric tolerance, the test passes with a warning instead of failing.
-
-#### Generating Reference Structures
-
-The fallback compares against `.rds` snapshot files stored in `_snaps/<context>/reference_plotobject/`. These are generated automatically the first time a plot test runs, or can be regenerated with:
-
-```r
-options(jaspTools.plotStructure.update = TRUE)
-jaspTools::testAll()
-# Turn it off again afterwards:
-options(jaspTools.plotStructure.update = FALSE)
-```
-
-The resulting `.rds` files should be committed alongside the SVG snapshots.
-
-#### Adjusting Tolerance
-
-For analyses with inherent numeric variation (e.g., MCMC-based Bayesian analyses), you can relax the comparison tolerance per test:
-
-```r
-jaspTools::expect_equal_plots(testPlot, "sequential-analysis", tolerance = 1e-3)
-```
-
-The default tolerance is `1e-3`. Lower values are stricter; higher values allow more numeric variation.
-
-#### What the Fallback Looks Like
-
-When the fallback accepts a plot, the test output shows a **warning** (not a failure):
+The fallback works by comparing the underlying ggplot data, labels, scales, and layers (instead of exact SVG text). If these match, the test passes with a warning:
 
 ```
 Warning: vdiffr mismatch for 'my-plot-subplot-1' accepted by structural fallback.
 ```
 
-This is expected when tests run on GitHub and cross-platform rendering differences are the only cause.
+To enable it, generate `.rds` reference files that store the plot structure:
 
-#### Inspecting SVG Differences
+```r
+options(jaspTools.plotStructure.update = TRUE)
+jaspTools::testAll()
+options(jaspTools.plotStructure.update = FALSE)
+```
 
-When a vdiffr comparison fails on GitHub, `jaspTools` saves the SVG that was generated during the test run as a `.new.svg` file. These are uploaded as downloadable artifacts on the GitHub Actions run page (requires the artifact upload step in `jasp-actions`). To inspect them:
+Commit the resulting `.rds` files in `_snaps/<context>/reference_plotobject/` alongside the SVG snapshots. On the next GitHub run, failing SVG comparisons will fall back to comparing against these `.rds` files.
 
-1. Go to the failed GitHub Actions run
-2. Scroll to the bottom and download the `snapshot-diffs` artifact
-3. Place the `.new.svg` files in the corresponding `_snaps/<context>/` folder alongside the reference `.svg` files
-4. Run `testthat::snapshot_review("<context>/")` to compare them side-by-side in a Shiny app
-
-::: {.callout-tip}
-It is difficult to trigger the structural fallback locally, since your machine produces consistent SVGs. The fallback is primarily relevant when tests run on GitHub, where the different OS and library versions cause rendering differences.
-:::
+To inspect what GitHub sees differently, download the `snapshot-diffs` artifact from the Actions run page. Place the `.new.svg` files in the `_snaps/<context>/` folder and run `testthat::snapshot_review("<context>/")` to compare them side-by-side against your local reference SVGs.
 
 ### Testing Errors and Validation
 
