@@ -18,6 +18,12 @@ Wrap **all** user-visible text in `qsTr()` for translation support. Use `\uXXXX`
 
 Follow the [QML style guide](appendix-qml-style.qmd) for formatting conventions and @sec-appendix-option-names for standardised option names.
 
+::: callout-tip
+## QML Controls Reference
+
+For a complete reference of all available QML controls — including every property, signal, and inheritance hierarchy — see the [auto-generated QML documentation](https://github.com/jasp-stats/jasp-desktop/tree/development/QMLComponents/doc/md_out/index.md). The sections below cover the most commonly used controls.
+:::
+
 ## General input components {#sec-qml-input-components}
 
 ### CheckBox
