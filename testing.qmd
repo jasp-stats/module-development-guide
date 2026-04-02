@@ -191,7 +191,7 @@ jaspTools::testAll()
 options(jaspTools.plotStructure.update = FALSE)
 ```
 
-Commit the resulting `.rds` files in `_snaps/<context>/reference_plotobject/` alongside the SVG snapshots. On the next GitHub run, failing SVG comparisons will fall back to comparing against these `.rds` files.
+The resulting `.rds` files are automatically stored in `tests/testthat/_snaps/<context>/reference_plotobject/`. After committing/pushing these files, failing SVG comparisons will fall back to comparing against these `.rds` files.
 
 To inspect what GitHub sees differently, download the `snapshot-diffs` artifact from the Actions run page. Place the `.new.svg` files in the `_snaps/<context>/` folder and run `testthat::snapshot_review("<context>/")` to compare them side-by-side against your local reference SVGs.
 
