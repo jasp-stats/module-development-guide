@@ -142,6 +142,21 @@ results <- runAnalysis("TTestIndependentSamples", "test.csv", options,
 # Prints boilerplate test code to the console — copy, refine, and save
 ```
 
+#### Controlling Numeric Precision {#sec-table-precision}
+
+By default, `expect_equal_tables()` rounds numeric values to 4 significant digits before comparing. For analyses with inherent cross-platform variability (e.g., MCMC-based Bayesian analyses where RNG differences across architectures produce slightly different posteriors), you can lower the precision with the `jaspRoundToPrecision` option:
+
+```r
+test_that("Bayesian posterior estimates match", {
+  # ... run analysis ...
+
+  # Use 1-digit precision to accommodate cross-platform MCMC variability
+  options("jaspRoundToPrecision" = function(x) signif(round(x, digits = 1), digits = 1))
+  jaspTools::expect_equal_tables(table, list(...))
+  options("jaspRoundToPrecision" = NULL) # reset to default
+})
+```
+
 ### Plot Tests
 
 Plot tests use SVG snapshot comparison:
