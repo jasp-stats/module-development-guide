@@ -157,6 +157,14 @@ test_that("Bayesian posterior estimates match", {
 })
 ```
 
+Alternatively, use `on.exit()` to guarantee the option is restored even if the test errors midway:
+
+```r
+  oldOpt <- options(jaspRoundToPrecision = function(x) signif(round(x, digits = 1), digits = 1))
+  on.exit(options(oldOpt), add = TRUE)
+  jaspTools::expect_equal_tables(table, list(...))
+```
+
 ### Plot Tests
 
 Plot tests use SVG snapshot comparison:
