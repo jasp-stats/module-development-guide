@@ -11,42 +11,61 @@ Module versions follow a three-part scheme: **major.minor.patch** (e.g., `0.19.1
 | `DESCRIPTION` | `Version: 0.19.1` |
 | `inst/Description.qml` | `version: "0.19.1"` |
 
+For routine pull requests, the **patch** component is now handled automatically: when a PR is merged, the `z` in `x.y.z` is incremented for you. In practice, that means you mainly need to think about the **minor** version.
+
 ## When to Bump
 
 ```{mermaid}
 flowchart TD
-    A[Module has a release] --> B[First change after release]
-    B --> C[Bump version number]
-    C --> D[Continue development]
-    D --> E{Satisfied?}
-    E -- No --> D
-    E -- Yes --> F[Ask core programmer to release]
-    F --> A
+    A[Module under development] --> B{Significant new feature\nor planned release?}
+    B -- No --> C[Open PRs and merge them]
+    C --> D[Patch bump happens automatically]
+    D --> A
+    B -- Yes --> E[Manually bump minor version]
+    E --> F[Continue development and testing]
+    F --> G{Ready for release?}
+    G -- No --> A
+    G -- Yes --> H[Ask a core programmer to make the official release]
+    H --> A
 ```
 
-**Rule**: The very first commit after a release should bump the version number. This ensures that:
+**Rule**: let merged PRs handle ordinary patch bumps, but manually bump the **minor** version whenever you introduce a meaningful new feature or want to mark a new release cycle.
 
-- Beta builds show "Install Beta" rather than "Downgrade Beta" in JASP's module library.
-- JASP reloads the module properly between restarts.
+This keeps the versioning workflow predictable:
+
+- Small fixes do not require manual patch bookkeeping.
+- Feature work still gets a clear version step when users should notice a change.
+- Releases remain easy to track in both the module library and the changelog.
 
 ### How high to bump
 
-It does not matter which part you increment, as long as the new version is higher:
+In day-to-day work, there are now two common cases:
 
-- Small bug fix: `0.19.1` → `0.19.2`
-- New feature: `0.19.1` → `0.20.0`
-- Major rework: `0.19.1` → `1.0.0`
+- Small bug fix merged via PR: `0.19.1` → `0.19.2` automatically
+- New feature or new release cycle: bump `0.19.1` → `0.20.0` manually before or alongside the feature/release work
+- Major rework: `0.19.1` → `1.0.0` if you intentionally want a major release
 
 You may also align with the current JASP release number (e.g., bump to `0.96` when JASP 0.96 ships), but this is optional.
+
+## NEWS.md
+
+Every module now includes a `NEWS.md` file. Treat this as the standard changelog for user-facing changes, bug fixes, and new features.
+
+- Update `NEWS.md` alongside your code.
+- PR automation checks whether `NEWS.md` changed and reminds you if it did not.
+- While work is still ongoing, add entries under `Development`.
+- When you are preparing an actual release, move those items under the new version heading.
+
+If you are unsure where to place a small fix, the default is simple: put it under `Development` until you are ready to cut a release.
 
 ## Release Workflow for Official Modules
 
 Official modules live under `jasp-stats/` on GitHub.
 
-1. **Development**: push commits to `jasp-stats/jaspModuleName`. Every push auto-syncs to the module registry and triggers a **beta bundle** build.
-2. **Beta testing**: users can install beta bundles from JASP's module library for testing.
-3. **Release**: when the module is ready, ask a core programmer (lead developer) to create an official release.
-4. **Post-release**: immediately bump the version number for the next development cycle.
+1. **Development**: open and merge PRs as usual. After merge, the patch version in `DESCRIPTION` is raised automatically.
+2. **Beta testing**: if changes are detected, beta builds of official modules are generated once per day and can be installed from JASP's module library.
+3. **Changelog**: keep `NEWS.md` updated during development so release notes are ready when needed.
+4. **Release**: when the module is ready for an official release, contact a core programmer to create it.
 
 ## Release Workflow for Community Modules
 

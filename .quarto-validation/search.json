@@ -1,0 +1,135 @@
+[
+  {
+    "objectID": "setup.html#install-jasp-nightly-build",
+    "href": "setup.html#install-jasp-nightly-build",
+    "title": "2  Setting Up Your Environment",
+    "section": "Install JASP (nightly build)",
+    "text": "Install JASP (nightly build)\nYou need a recent version of JASP to develop modules. Nightly builds include the latest features.\n\nWindows & macOSLinux\n\n\nDownload the latest nightly build for your platform.\n\n\n# 1. Install flatpak if needed: https://flatpak.org/setup/\n# 2. Add the beta repository\nflatpak remote-add --if-not-exists flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo\n\n# 3. Install JASP beta\nflatpak install flathub-beta org.jaspstats.JASP\n\n# 4. Launch in development mode\nflatpak run --branch=beta --devel org.jaspstats.JASP\n\n\n\n\n\n\nWarning\n\n\n\nJASP remembers the branch it was launched from. To switch back to stable: flatpak run --branch=stable org.jaspstats.JASP\n\n\nIf you see runtime/org.kde.Sdk/x86_64/6.7 not installed, fix it with:\nflatpak install org.kde.Sdk   # choose version 6.7"
+  },
+  {
+    "objectID": "setup.html#sec-git-setup",
+    "href": "setup.html#sec-git-setup",
+    "title": "2  Setting Up Your Environment",
+    "section": "Install and configure Git",
+    "text": "Install and configure Git\nGit is a version control system that tracks changes to your code over time. It lets you undo mistakes, work on different features in parallel (via branches), and collaborate with others through platforms like GitHub. All JASP modules are hosted on GitHub, so you’ll need Git throughout your development workflow.\n\nInstall Git\n\nmacOSWindowsLinux\n\n\nGit comes with the Xcode Command Line Tools. Open a terminal and run:\ngit --version\nIf Git isn’t installed, macOS will prompt you to install the tools. Alternatively, install via Homebrew: brew install git.\n\n\nDownload and install from git-scm.com/downloads. The default settings are fine. This also installs Git Bash, a terminal you can use for Git commands.\n\n\n# Debian/Ubuntu\nsudo apt install git\n\n# Fedora\nsudo dnf install git\n\n\n\n\n\nConfigure your identity\nGit tags every commit with your name and email. Set these once:\ngit config --global user.name \"Your Name\"\ngit config --global user.email \"you@example.org\"\n\n\nCreate a GitHub account\nIf you don’t have one yet, sign up at github.com. JASP modules live under the jasp-stats organisation.\n\n\nKey Git concepts\nYou don’t need to be a Git expert to develop JASP modules, but a few concepts come up constantly:\n\n\n\n\n\n\n\nConcept\nWhat it means\n\n\n\n\nRepository (repo)\nA project folder tracked by Git\n\n\nClone\nDownload a copy of a remote repository to your computer\n\n\nFork\nCreate your own copy of someone else’s repository on GitHub\n\n\nCommit\nSave a snapshot of your changes\n\n\nBranch\nA parallel line of development (e.g., feature/my-analysis)\n\n\nPush / Pull\nUpload your commits to GitHub / download others’ commits\n\n\nPull request (PR)\nAsk the maintainers to merge your branch into the main project\n\n\n\n\n\nLearning resources\n\nGitHub in 20 Minutes — beginner-friendly video introduction to GitHub\nGit in 15 Minutes — beginner-friendly video introduction to Git\nGit User Manual — the official comprehensive reference\nPro Git book — free online book, excellent for beginners and advanced users\nGitHub Skills — interactive tutorials for learning Git with GitHub\nOh My Git! — a game to learn Git visually\n\nFor more R packaging, QML, and JASP-specific resources, see the Resources appendix.\nFor the JASP-specific Git workflow (forking, branching, pull requests), see the Git Workflow chapter. That chapter builds on the basics covered here and explains the day-to-day workflow you’ll use when contributing to JASP modules. The Publishing Your Module chapter covers how to submit your module to the JASP Module Library."
+  },
+  {
+    "objectID": "setup.html#fork-and-clone-the-module-template",
+    "href": "setup.html#fork-and-clone-the-module-template",
+    "title": "2  Setting Up Your Environment",
+    "section": "Fork and clone the module template",
+    "text": "Fork and clone the module template\n\nGo to jaspModuleTemplate and click Fork.\nClone your fork:\n\ngit clone https://github.com/&lt;your-username&gt;/jaspModuleTemplate.git\ncd jaspModuleTemplate\nAlternatively, fork an existing module from jasp-stats."
+  },
+  {
+    "objectID": "setup.html#sec-renv",
+    "href": "setup.html#sec-renv",
+    "title": "2  Setting Up Your Environment",
+    "section": "Package Management with renv",
+    "text": "Package Management with renv\nJASP modules use renv to lock package versions. This ensures that your module builds reproducibly and that collaborators (and CI) use the exact same dependency versions.\nEvery module repository should contain a renv.lock file. When you start working on a module, bootstrap the renv environment with this script:\n# Set your GitHub PAT to avoid rate limits during package installation\nSys.setenv(GITHUB_PAT = \"&lt;your PAT&gt;\")\n\n# Activate the renv project (or confirm it's already active)\nif (is.null(renv::project())) {\n  message(\"This isn't an active renv project.\")\n  renv::activate()\n} else {\n  message(\"We're in an active renv project.\")\n}\n\n# Install all locked dependencies\nmessage(\"Restoring/synchronizing the project library.\")\nrenv::restore()\n\n# Install the module itself into the renv library\nmessage(\"Installing the package.\")\nrenv::install(\".\")\n\n# Print the library path — you'll need this for JASP developer mode\nmessage(\"R libPath for developer mode:\\n\", .libPaths()[1])\nThe last line prints the library path for your newly installed module. Copy this path — you will paste it into JASP’s developer mode settings (see below).\n\n\n\n\n\n\nTip\n\n\n\nWhen you add or update a dependency, run renv::snapshot() to update the lockfile and commit it."
+  },
+  {
+    "objectID": "setup.html#install-your-module-as-an-r-package",
+    "href": "setup.html#install-your-module-as-an-r-package",
+    "title": "2  Setting Up Your Environment",
+    "section": "Install your module as an R package",
+    "text": "Install your module as an R package\nWith renv active, the simplest way is:\nrenv::install(\".\")\nAlternatively, from the terminal:\nR CMD INSTALL . --preclean --no-multiarch --with-keep.source\nNote the library path where the module is installed — you’ll need it for developer mode. Run .libPaths()[1] in R to see it."
+  },
+  {
+    "objectID": "setup.html#sec-dev-mode",
+    "href": "setup.html#sec-dev-mode",
+    "title": "2  Setting Up Your Environment",
+    "section": "Configure JASP for development",
+    "text": "Configure JASP for development\n\nRecommended: renv mode\n\nOpen JASP\nMenu (☰) → Preferences → Advanced\nCheck Developer mode\nCheck Enable renv mode\nSet the libpath where you installed the module\nEnter the module name (as listed in DESCRIPTION)\n\n\n\n\nDeveloper module setup with renv\n\n\n\nGo back to the main JASP window\nClick the + icon (top-right) → Install Developer Module\n\n\n\n\nInstalling the developer module"
+  },
+  {
+    "objectID": "setup.html#sec-pat",
+    "href": "setup.html#sec-pat",
+    "title": "2  Setting Up Your Environment",
+    "section": "GitHub Personal Access Token",
+    "text": "GitHub Personal Access Token\nIf module installation fails with rate-limiting errors:\n\n\n\nInstallation failure due to GitHub rate limiting\n\n\nCreate a GitHub Personal Access Token (no special permissions needed — it just identifies you as a legitimate user).\nIn JASP: Preferences → Advanced → uncheck Use default PAT for Github → paste your token → press Enter/Tab."
+  },
+  {
+    "objectID": "setup.html#sec-dev-cycle",
+    "href": "setup.html#sec-dev-cycle",
+    "title": "2  Setting Up Your Environment",
+    "section": "The development cycle",
+    "text": "The development cycle\n\n\n\n\ngraph LR\n  A[Edit R/QML files] --&gt; B[Recompile module]\n  B --&gt; C[Refresh in JASP]\n  C --&gt; D[Test changes]\n  D --&gt; A\n\n\n\n\n\n\nEdit your R and/or QML files in your editor of choice\nRecompile: R CMD INSTALL . --preclean --no-multiarch --with-keep.source\nRefresh: in JASP, click + → find your module → click the blue refresh button (🔄)\n\nYou must recompile to see changes — JASP loads from the installed package in the renv library.\n\n\n\n\n\n\nTip\n\n\n\nStart with the QML interface before writing the R analysis. This lets you iterate on the UI quickly and see option names before writing the backend code."
+  },
+  {
+    "objectID": "versioning.html#version-numbers",
+    "href": "versioning.html#version-numbers",
+    "title": "14  Versioning & Releases",
+    "section": "14.1 Version Numbers",
+    "text": "14.1 Version Numbers\nModule versions follow a three-part scheme: major.minor.patch (e.g., 0.19.1). The version is defined in two places and must match:\n\n\n\nFile\nLocation\n\n\n\n\nDESCRIPTION\nVersion: 0.19.1\n\n\ninst/Description.qml\nversion: \"0.19.1\"\n\n\n\nFor routine pull requests, the patch component is now handled automatically: when a PR is merged, the z in x.y.z is incremented for you. In practice, that means you mainly need to think about the minor version."
+  },
+  {
+    "objectID": "versioning.html#when-to-bump",
+    "href": "versioning.html#when-to-bump",
+    "title": "14  Versioning & Releases",
+    "section": "14.2 When to Bump",
+    "text": "14.2 When to Bump\n\n\n\n\nflowchart TD\n    A[Module under development] --&gt; B{Significant new feature\\nor planned release?}\n    B -- No --&gt; C[Open PRs and merge them]\n    C --&gt; D[Patch bump happens automatically]\n    D --&gt; A\n    B -- Yes --&gt; E[Manually bump minor version]\n    E --&gt; F[Continue development and testing]\n    F --&gt; G{Ready for release?}\n    G -- No --&gt; A\n    G -- Yes --&gt; H[Ask a core programmer to make the official release]\n    H --&gt; A\n\n\n\n\n\nRule: let merged PRs handle ordinary patch bumps, but manually bump the minor version whenever you introduce a meaningful new feature or want to mark a new release cycle.\nThis keeps the versioning workflow predictable:\n\nSmall fixes do not require manual patch bookkeeping.\nFeature work still gets a clear version step when users should notice a change.\nReleases remain easy to track in both the module library and the changelog.\n\n\n14.2.1 How high to bump\nIn day-to-day work, there are now two common cases:\n\nSmall bug fix merged via PR: 0.19.1 → 0.19.2 automatically\nNew feature or new release cycle: bump 0.19.1 → 0.20.0 manually before or alongside the feature/release work\nMajor rework: 0.19.1 → 1.0.0 if you intentionally want a major release\n\nYou may also align with the current JASP release number (e.g., bump to 0.96 when JASP 0.96 ships), but this is optional."
+  },
+  {
+    "objectID": "versioning.html#news.md",
+    "href": "versioning.html#news.md",
+    "title": "14  Versioning & Releases",
+    "section": "14.3 NEWS.md",
+    "text": "14.3 NEWS.md\nEvery module now includes a NEWS.md file. Treat this as the standard changelog for user-facing changes, bug fixes, and new features.\n\nUpdate NEWS.md alongside your code.\nPR automation checks whether NEWS.md changed and reminds you if it did not.\nWhile work is still ongoing, add entries under Development.\nWhen you are preparing an actual release, move those items under the new version heading.\n\nIf you are unsure where to place a small fix, the default is simple: put it under Development until you are ready to cut a release."
+  },
+  {
+    "objectID": "versioning.html#release-workflow-for-official-modules",
+    "href": "versioning.html#release-workflow-for-official-modules",
+    "title": "14  Versioning & Releases",
+    "section": "14.4 Release Workflow for Official Modules",
+    "text": "14.4 Release Workflow for Official Modules\nOfficial modules live under jasp-stats/ on GitHub.\n\nDevelopment: open and merge PRs as usual. After merge, the patch version in DESCRIPTION is raised automatically.\nBeta testing: if changes are detected, beta builds of official modules are generated once per day and can be installed from JASP’s module library.\nChangelog: keep NEWS.md updated during development so release notes are ready when needed.\nRelease: when the module is ready for an official release, contact a core programmer to create it."
+  },
+  {
+    "objectID": "versioning.html#release-workflow-for-community-modules",
+    "href": "versioning.html#release-workflow-for-community-modules",
+    "title": "14  Versioning & Releases",
+    "section": "14.5 Release Workflow for Community Modules",
+    "text": "14.5 Release Workflow for Community Modules\nCommunity modules live under your personal GitHub account.\n\nDevelopment: push to your own repository.\nSubmission: register your module in the community registry (see Chapter 15).\nUpdates: open cross-fork PRs to the jasp-stats-modules fork of your repo.\nBeta/Release: after merge, automated systems build and publish a beta release."
+  },
+  {
+    "objectID": "versioning.html#upgrades.qml-and-versions",
+    "href": "versioning.html#upgrades.qml-and-versions",
+    "title": "14  Versioning & Releases",
+    "section": "14.6 Upgrades.qml and Versions",
+    "text": "14.6 Upgrades.qml and Versions\nUpgrade entries in Upgrades.qml reference module versions, not JASP versions. When you bump a version and rename or remove options, add an upgrade block targeting that version range (see Chapter 13)."
+  },
+  {
+    "objectID": "publishing.html#community-module-submission",
+    "href": "publishing.html#community-module-submission",
+    "title": "15  Publishing Your Module",
+    "section": "15.1 Community Module Submission",
+    "text": "15.1 Community Module Submission\nCommunity modules are managed through the modules-registry repository on GitHub under the jasp-stats-modules organization. To add your module, choose one of the two options below.\n\n15.1.1 Option 1: Contact the Team\nOpen an issue on the JASP issue tracker or send a message on Mattermost. The JASP team will add it for you.\n\n\n15.1.2 Option 2: Pull Request\n\nFork the modules-registry repository.\nAdd a new .yaml file in the modules-metadata/ folder. The filename should match your module name (e.g., jaspMyModule.yaml). The file needs two fields:\nname: \"jaspMyModule\"\ngitUrl: \"https://github.com/yourname/jaspMyModule\"\nCreate a pull request to the modules-registry repository.\nAfter review and a successful merge, the JASP organization will fork your module repository and it will appear in the community modules list. Users running the JASP beta or nightly can then install it."
+  },
+  {
+    "objectID": "publishing.html#updating-a-community-module",
+    "href": "publishing.html#updating-a-community-module",
+    "title": "15  Publishing Your Module",
+    "section": "15.2 Updating a Community Module",
+    "text": "15.2 Updating a Community Module\nOnce your module is in the registry, the JASP organization maintains a fork of your repository at https://github.com/jasp-stats-modules/YourModuleName. When you have new features or bug fixes ready, open a cross-fork pull request from your repository to this fork:\n\nFind the fork: https://github.com/jasp-stats-modules/YourModuleName\nCreate cross-fork PR:\n\nGo to the JASP fork → Pull Requests → New Pull Request\nClick “compare across forks”\nSet:\n\nBase repository: jasp-stats-modules/YourModuleName (JASP’s fork)\nBase branch: master or main\nHead repository: yourname/YourModuleName (your repo)\nCompare branch: your update branch\n\nClick Create pull request\n\nReview: the JASP team reviews and may request adjustments.\nMerge & sync: once merged, automated systems build and publish a beta release."
+  },
+  {
+    "objectID": "publishing.html#updating-an-official-module",
+    "href": "publishing.html#updating-an-official-module",
+    "title": "15  Publishing Your Module",
+    "section": "15.3 Updating an Official Module",
+    "text": "15.3 Updating an Official Module\nOfficial modules (jasp-stats/jasp*) sync automatically:\n\nAfter a PR is merged, the patch version in DESCRIPTION is bumped automatically.\nBump the minor version yourself when you add a substantial feature or want to start a new release cycle.\nBeta builds are generated once per day when changes are detected.\nKeep NEWS.md updated as you work; use a Development heading until you are ready to cut a release.\nFor a proper official release, ask a core programmer."
+  },
+  {
+    "objectID": "publishing.html#module-quality-checklists",
+    "href": "publishing.html#module-quality-checklists",
+    "title": "15  Publishing Your Module",
+    "section": "15.4 Module Quality Checklists",
+    "text": "15.4 Module Quality Checklists\n\n15.4.1 Official JASP Module Checklist\n\n\n\n\n\n\nImportant\n\n\n\nAll items should be completed before requesting an official release.\n\n\n\nUnit tests with ≥ 70% analysis coverage\nAuto-generated tests from .jasp example files (makeTestsFromExamples())\nAll tests pass in GitHub Actions CI (Section 10.6)\nComplete help files for every analysis (inst/help/)\ninfo properties on all QML elements for inline documentation\nInformative README with module description (Section 15.5)\nNEWS / changelog file maintained and updated before each release\nOption names follow naming conventions (Section 8.3)\nUpgrades.qml entries for any renamed/removed options (Chapter 13)\nAll user-visible strings wrapped for translation (Chapter 12)\nCorrect license headers on all source files (Chapter 17)\nR style compliance (Section 8.1)\nQML style compliance (Section 8.2)\nStandardised error messages (Section 5.5)\n\n\n\n15.4.2 Community JASP Module Checklist\n\n\n\n\n\n\nNote\n\n\n\nThese are the minimum requirements for a community module to be accepted into the registry.\n\n\n\nAt least one test per analysis that runs without error\nREADME with module description and usage instructions (Section 15.5)\nWorking example .jasp files (in tests/testthat/jaspfiles/ or examples/)\nModule installs and loads without errors in current JASP nightly\nValid DESCRIPTION file with correct metadata (title, author, version, dependencies)\nValid NAMESPACE file (auto-generated or correct exports)\nDescription.qml with proper module name, description, version, and analysis entries\n\n\n\n15.4.3 Optional but Recommended (Community)\n\nHelp files or info properties on QML elements\nTranslation-ready strings\nGitHub Actions CI workflow\nUpgrades.qml for backward compatibility"
+  },
+  {
+    "objectID": "publishing.html#sec-module-readme",
+    "href": "publishing.html#sec-module-readme",
+    "title": "15  Publishing Your Module",
+    "section": "15.5 Module README",
+    "text": "15.5 Module README\nYour module’s README.md is the landing page for anyone wanting to learn more about your module — we link to it from the JASP module library. A good README makes it easy to see at a glance what the module does, who maintains it, and whether the tests are passing. See jaspMetaAnalysis for a full example.\nA module README should include the following:\n\n15.5.1 Badges and maintainer\nAt the top, add badges for the unit test and coverage workflows, plus the maintainer name(s). Replace jaspMyModule and the maintainer details as appropriate:\n&lt;div align=\"right\"&gt;\n\n[![Unit Tests](https://github.com/jasp-stats/jaspMyModule/actions/workflows/unittests.yml/badge.svg)](https://github.com/jasp-stats/jaspMyModule/actions/workflows/unittests.yml)\n[![codecov](https://codecov.io/gh/jasp-stats/jaspMyModule/branch/master/graph/badge.svg)](https://codecov.io/gh/jasp-stats/jaspMyModule)\n&lt;br&gt;\n&lt;b&gt;Maintainer:&lt;/b&gt; &lt;a href=\"https://github.com/username/\"&gt;Maintainer Name&lt;/a&gt;\n\n&lt;/div&gt;\nThe codecov badge requires the coverage workflow to be set up first — see ?sec-coverage for instructions.\nIf multiple people share maintainer duties (e.g., one for frequentist and one for Bayesian analyses):\n&lt;b&gt;Maintainers:&lt;/b&gt; &lt;a href=\"https://github.com/JohnnyDoorn/\"&gt;Johnny van Doorn (Freq)&lt;/a&gt;&lt;br&gt;\n &lt;a href=\"https://github.com/vandenman/\"&gt;Don van den Bergh (Bayes)&lt;/a&gt;\n\n\n15.5.2 Module description\nAdd a short overview of what your module does: which analyses it provides, and what kind of research questions it helps answer. You can include the module icon for visual identity:\n# The Meta-Analysis Module\n\n## Overview\n\n&lt;img src='inst/icons/meta-analysis.svg' width='149' height='173' align='right'/&gt;\n\n**JASP Meta-Analysis module** is an add-on module for JASP that provides\ntools for ...\n\n\n15.5.3 Key R packages\nList the main R packages that power your module’s analyses. This helps users and contributors understand what’s under the hood:\n## R Packages\n\n&lt;img src='https://www.r-project.org/logo/Rlogo.svg' width='100' height='78' align='right'/&gt;\n\nThe functionality is served by several R packages\n\n- **metafor** — Meta-analysis ([metafor on CRAN](https://cran.r-project.org/package=metafor))\n- **metaBMA** — Bayesian model averaging for meta-analysis ([metaBMA on CRAN](https://cran.r-project.org/package=metaBMA))\nFocus on the packages that are specific to your module’s analyses — no need to list general dependencies like ggplot2 or jaspBase unless they play a central role."
+  }
+]

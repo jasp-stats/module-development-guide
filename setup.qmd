@@ -104,6 +104,8 @@ You don't need to be a Git expert to develop JASP modules, but a few concepts co
 
 ### Learning resources
 
+- [GitHub in 20 Minutes](https://www.youtube.com/watch?v=nhNq2kIvi9s) — beginner-friendly video introduction to GitHub
+- [Git in 15 Minutes](https://www.youtube.com/watch?v=USjZcfj8yxE) — beginner-friendly video introduction to Git
 - [Git User Manual](https://git-scm.com/docs/user-manual.html) — the official comprehensive reference
 - [Pro Git book](https://git-scm.com/book/en/v2) — free online book, excellent for beginners and advanced users
 - [GitHub Skills](https://skills.github.com/) — interactive tutorials for learning Git with GitHub

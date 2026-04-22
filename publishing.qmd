@@ -42,9 +42,11 @@ Once your module is in the registry, the JASP organization maintains a fork of y
 
 Official modules (`jasp-stats/jasp*`) sync automatically:
 
-- Every push to the module repository triggers a beta bundle build.
-- For a proper release, ask a core programmer.
-- Update the `NEWS` file with a summary of changes before requesting a release.
+- After a PR is merged, the patch version in `DESCRIPTION` is bumped automatically.
+- Bump the minor version yourself when you add a substantial feature or want to start a new release cycle.
+- Beta builds are generated once per day when changes are detected.
+- Keep `NEWS.md` updated as you work; use a `Development` heading until you are ready to cut a release.
+- For a proper official release, ask a core programmer.
 
 ## Module Quality Checklists
 
