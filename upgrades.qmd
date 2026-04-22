@@ -188,7 +188,7 @@ ChangeRemove { name: "dropped"; msg: qsTr("The 'dropped' option is no longer sup
 
 ## Version Tying
 
-- The version in `Upgrades.qml` matches your **module version** (from `DESCRIPTION` and `Description.qml`), not the JASP version.
+- The version in `Upgrades.qml` matches your **module version** from `DESCRIPTION`, not the JASP version.
 - You do not need an `Upgrade` block for every module version — only for versions where options actually changed.
 - JASP chains through intermediate versions automatically.
 

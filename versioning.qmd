@@ -4,14 +4,15 @@ JASP module versions are decoupled from JASP desktop versions. Each module maint
 
 ## Version Numbers
 
-Module versions follow a three-part scheme: **major.minor.patch** (e.g., `0.19.1`). The version is defined in two places and must match:
+Module versions follow a three-part scheme: **major.minor.patch** (e.g., `0.19.1`). The version that matters for module releases and automation is the one in `DESCRIPTION`:
 
 | File | Location |
 |------|----------|
 | `DESCRIPTION` | `Version: 0.19.1` |
-| `inst/Description.qml` | `version: "0.19.1"` |
 
-For routine pull requests, the **patch** component is now handled automatically from the version in `DESCRIPTION`: when a PR is merged, the `z` in `x.y.z` is incremented for you. When you intentionally bump a **minor** or **major** version yourself, update both files so they stay aligned.
+For routine pull requests, the **patch** component is now handled automatically from the version in `DESCRIPTION`: when a PR is merged, the `z` in `x.y.z` is incremented for you. When you intentionally bump a **minor** or **major** version yourself, update `DESCRIPTION` accordingly.
+
+Some templates still include metadata such as `version`, `author`, `maintainer`, `website`, and `license` in `inst/Description.qml`, but those properties are currently no-ops when the same information is already present in `DESCRIPTION`.
 
 ## When to Bump
 

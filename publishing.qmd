@@ -83,7 +83,7 @@ These are the minimum requirements for a community module to be accepted into th
 - [ ] Module **installs and loads** without errors in current JASP nightly
 - [ ] Valid `DESCRIPTION` file with correct metadata (title, author, version, dependencies)
 - [ ] Valid `NAMESPACE` file (auto-generated or correct exports)
-- [ ] `Description.qml` with proper module name, description, version, and analysis entries
+- [ ] `Description.qml` with the proper module name, description, and analysis entries
 
 ### Optional but Recommended (Community)
 
