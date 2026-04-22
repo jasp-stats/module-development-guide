@@ -11,7 +11,7 @@ Module versions follow a three-part scheme: **major.minor.patch** (e.g., `0.19.1
 | `DESCRIPTION` | `Version: 0.19.1` |
 | `inst/Description.qml` | `version: "0.19.1"` |
 
-For routine pull requests, the **patch** component is now handled automatically: when a PR is merged, the `z` in `x.y.z` is incremented for you. In practice, that means you mainly need to think about the **minor** version.
+For routine pull requests, the **patch** component is now handled automatically from the version in `DESCRIPTION`: when a PR is merged, the `z` in `x.y.z` is incremented for you. When you intentionally bump a **minor** or **major** version yourself, update both files so they stay aligned.
 
 ## When to Bump
 
@@ -53,10 +53,10 @@ Every module now includes a `NEWS.md` file. Treat this as the standard changelog
 
 - Update `NEWS.md` alongside your code.
 - PR automation checks whether `NEWS.md` changed and reminds you if it did not.
-- While work is still ongoing, add entries under `Development`.
+- While work is still ongoing, add entries under the top `# yourModuleName (development version)` section.
 - When you are preparing an actual release, move those items under the new version heading.
 
-If you are unsure where to place a small fix, the default is simple: put it under `Development` until you are ready to cut a release.
+If you are unsure where to place a small fix, the default is simple: keep it under the `development version` heading until you are ready to cut a release.
 
 ## Release Workflow for Official Modules
 

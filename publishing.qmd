@@ -45,7 +45,7 @@ Official modules (`jasp-stats/jasp*`) sync automatically:
 - After a PR is merged, the patch version in `DESCRIPTION` is bumped automatically.
 - Bump the minor version yourself when you add a substantial feature or want to start a new release cycle.
 - Beta builds are generated once per day when changes are detected.
-- Keep `NEWS.md` updated as you work; use a `Development` heading until you are ready to cut a release.
+- Keep `NEWS.md` updated as you work; add entries under the top `development version` heading until you are ready to cut a release.
 - For a proper official release, ask a core programmer.
 
 ## Module Quality Checklists
