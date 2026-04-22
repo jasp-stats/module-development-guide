@@ -12,7 +12,7 @@ Module versions follow a three-part scheme: **major.minor.patch** (e.g., `0.19.1
 
 For routine pull requests, the **patch** component is now handled automatically from the version in `DESCRIPTION`: when a PR is merged, the `z` in `x.y.z` is incremented for you. When you intentionally bump a **minor** or **major** version yourself, update `DESCRIPTION` accordingly.
 
-Some templates still include metadata such as `version`, `author`, `maintainer`, `website`, and `license` in `inst/Description.qml`, but those properties are currently no-ops when the same information is already present in `DESCRIPTION`.
+Some templates still include metadata such as `version`, `author`, `maintainer`, `website`, and `license` in `inst/Description.qml`, but those properties are always no-ops: JASP ignores them, so changing them has no effect. For release metadata, `DESCRIPTION` is the source of truth.
 
 ## When to Bump
 
